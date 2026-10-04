@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halloween Trick-or-Treat Tracker 2008–2025</title>
+<style>
+  :root{
+    --page-plane:      #0d0d10;
+    --surface-1:       #1a1a1f;
+    --surface-2:       #201f27;
+    --text-primary:    #ffffff;
+    --text-secondary:  #c9c7d1;
+    --text-muted:      #8d8a97;
+    --gridline:        #33323b;
+    --baseline:        #423f4d;
+    --accent-orange:   #ff7a3d;
+    --accent-orange-2: #d95926;
+    --accent-purple:   #9085e9;
+    --accent-purple-2: #6a5cd6;
+    --ring:            var(--surface-1);
+    --border:          rgba(255,255,255,0.10);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(154,102,255,0.16), transparent 60%),
+      radial-gradient(ellipse 800px 500px at 100% 0%, rgba(255,122,61,0.10), transparent 55%),
+      var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---------- decorative layer ---------- */
+  .sky{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .star{ position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; opacity:.5; animation: twinkle 4s ease-in-out infinite; }
+  @keyframes twinkle{ 0%,100%{opacity:.15;} 50%{opacity:.8;} }
+  .bat{ position:absolute; font-size:20px; opacity:.55; animation: fly 22s linear infinite; filter: drop-shadow(0 0 4px rgba(0,0,0,.4)); }
+  @keyframes fly{
+    0%{ transform: translate(-10vw, 8vh) scale(0.8); }
+    50%{ transform: translate(55vw, 2vh) scale(1); }
+    100%{ transform: translate(120vw, 10vh) scale(0.8); }
+  }
+
+  .wrap{ position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:36px 20px 60px; }
+
+  /* ---------- header ---------- */
+  header{ text-align:center; margin-bottom:34px; }
+  header h1{
+    font-size: clamp(26px, 4vw, 40px);
+    margin: 0 0 8px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  header h1 .pumpkin{ display:inline-block; animation: bob 2.6s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform: translateY(0) rotate(-4deg);} 50%{ transform: translateY(-4px) rotate(4deg);} }
+  header p{ color: var(--text-secondary); margin:0; font-size:15px; }
+  header .sub{ color: var(--text-muted); font-size:13px; margin-top:6px; }
+
+  /* ---------- cards ---------- */
+  .card{
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 22px 18px;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .card h2{
+    font-size: 16px; margin: 0 0 4px; font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .card .desc{ color: var(--text-muted); font-size:12.5px; margin:0 0 16px; }
+
+  /* ---------- stat tiles ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .stat{
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 16px 14px;
+  }
+  .stat .icon{ font-size:18px; margin-bottom:6px; display:block; }
+  .stat .label{ font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+  .stat .value{ font-size:26px; font-weight:800; line-height:1.1; }
+  .stat .value small{ font-size:13px; color:var(--text-secondary); font-weight:600; }
+  .stat .delta{ font-size:12.5px; margin-top:4px; font-weight:600; }
+  .stat .delta.up{ color:#3ecf6a; }
+  .stat .delta.down{ color:#ff8a7a; }
+  .stat.orange{ border-color: rgba(255,122,61,0.35); }
+  .stat.purple{ border-color: rgba(144,133,233,0.35); }
+
+  /* ---------- chart chrome ---------- */
+  .chart-controls{ display:flex; flex-wrap:wrap; gap:14px 22px; align-items:center; margin-bottom:14px; }
+  .chart-controls label{ font-size:12.5px; color:var(--text-secondary); display:flex; align-items:center; gap:7px; }
+  select, .num-input{
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  select:focus, .num-input:focus{ outline: 2px solid var(--accent-orange); outline-offset:1px; }
+  input[type="checkbox"]{ accent-color: var(--accent-purple); width:14px; height:14px; }
+
+  svg.chart{ width:100%; height:auto; display:block; overflow: visible; }
+  .axis-label{ fill: var(--text-muted); font-size: 10.5px; }
+  .grid-line{ stroke: var(--gridline); stroke-width:1; }
+  .baseline{ stroke: var(--baseline); stroke-width:1; }
+  .bar-rect{ fill: var(--accent-orange-2); transition: fill .15s ease; cursor:pointer; }
+  .bar-rect:hover, .bar-rect.hover{ fill: var(--accent-orange); }
+  .bar-rect.current{ fill: var(--accent-purple); }
+  .bar-rect.current:hover{ fill: var(--accent-purple-2); }
+  .direct-label{ fill: var(--text-primary); font-size: 11px; font-weight:700; text-anchor:middle; }
+  .direct-label.muted{ fill: var(--text-secondary); font-weight:600; }
+  .context-line{ fill:none; stroke: var(--text-muted); stroke-width:1.3; opacity:.28; }
+  .series-line{ fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .series-dot{ stroke: var(--ring); stroke-width:2; }
+  .crosshair{ stroke: var(--text-muted); stroke-width:1; stroke-dasharray:0; opacity:0; pointer-events:none; }
+
+  .legend{ display:flex; gap:16px; flex-wrap:wrap; font-size:12.5px; color:var(--text-secondary); margin-top:10px; }
+  .legend .item{ display:flex; align-items:center; gap:6px; }
+  .legend .swatch{ width:16px; height:2px; border-radius:2px; display:inline-block; }
+
+  /* ---------- tooltip ---------- */
+  .tooltip{
+    position:fixed; pointer-events:none; z-index:60;
+    background: var(--surface-2); border:1px solid var(--border);
+    border-radius:10px; padding:9px 12px; font-size:12.5px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    opacity:0; transform: translateX(-50%); transition: opacity .1s ease;
+    white-space:nowrap;
+  }
+  .tooltip.show{ opacity:1; }
+  .tooltip .t-title{ color:var(--text-muted); font-size:11px; margin-bottom:4px; }
+  .tooltip .t-row{ display:flex; align-items:center; gap:6px; }
+  .tooltip .t-row + .t-row{ margin-top:3px; }
+  .tooltip .t-key{ width:10px; height:2px; border-radius:2px; display:inline-block; }
+  .tooltip .t-val{ font-weight:800; }
+  .tooltip .t-name{ color:var(--text-secondary); }
+
+  /* ---------- data table ---------- */
+  details.table-toggle{ margin-top:6px; }
+  details.table-toggle summary{
+    cursor:pointer; font-size:12.5px; color:var(--text-secondary);
+    list-style:none; display:inline-flex; align-items:center; gap:6px;
+  }
+  details.table-toggle summary::-webkit-details-marker{ display:none; }
+  details.table-toggle summary::before{ content:"▸"; transition: transform .15s; color:var(--text-muted); }
+  details.table-toggle[open] summary::before{ transform: rotate(90deg); }
+  table.data-table{ width:100%; border-collapse:collapse; margin-top:12px; font-size:12.5px; font-variant-numeric: tabular-nums; }
+  table.data-table th, table.data-table td{ padding:7px 9px; text-align:right; border-bottom:1px solid var(--border); }
+  table.data-table th:first-child, table.data-table td:first-child{ text-align:left; }
+  table.data-table th{ color:var(--text-muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+  table.data-table tr:hover td{ background: rgba(255,255,255,0.03); }
+
+  /* ---------- candy calculator ---------- */
+  .candy-card{ border-color: rgba(144,133,233,0.35); }
+  .candy-grid{ display:grid; grid-template-columns: 1.1fr 1fr; gap:22px; }
+  @media (max-width: 720px){ .candy-grid{ grid-template-columns:1fr; } }
+  .candy-inputs .field{ margin-bottom:14px; }
+  .candy-inputs label{ display:block; font-size:12.5px; color:var(--text-secondary); margin-bottom:5px; }
+  .candy-inputs select, .candy-inputs input{ width:100%; }
+  .candy-outputs{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-content:start; }
+  .candy-out{
+    background: var(--surface-2); border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px;
+  }
+  .candy-out .label{ font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .candy-out .value{ font-size:21px; font-weight:800; color: var(--accent-purple); }
+  .candy-note{ grid-column: 1/-1; font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+
+  footer{ text-align:center; color:var(--text-muted); font-size:12px; margin-top:34px; }
+  footer .pun{ color:var(--text-secondary); font-size:13px; margin-bottom:6px; }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <h1><span class="pumpkin">🎃</span> Halloween Trick-or-Treat Tracker <span class="pumpkin" style="animation-delay:1.3s">👻</span></h1>
+    <p>Front-door visitor counts, 2008 – 2025</p>
+    <p class="sub">Cumulative arrivals logged every half hour, 6:00pm to 8:15pm</p>
+  </header>
+
+  <!-- STAT TILES -->
+  <div class="stats" id="stats"></div>
+
+  <!-- YEAR OVER YEAR -->
+  <section class="card">
+    <h2>🕸️ Total trick-or-treaters, by year</h2>
+    <p class="desc">Final 8:15pm count each Halloween. Hover a bar for the exact number.</p>
+    <div id="barChartHost"></div>
+    <details class="table-toggle">
+      <summary>View full data table</summary>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="dataTable"></table>
+      </div>
+    </details>
+  </section>
+
+  <!-- TIME OF NIGHT PACE -->
+  <section class="card">
+    <h2>🦇 Pace of the night</h2>
+    <p class="desc">How trick-or-treater arrivals built up over the evening. Pick a year to highlight it against every other year on record.</p>
+    <div class="chart-controls">
+      <label>Highlight year
+        <select id="yearSelect"></select>
+      </label>
+      <label><input type="checkbox" id="avgToggle" checked> Show 18-year average</label>
+    </div>
+    <div id="lineChartHost"></div>
+    <div class="legend" id="lineLegend"></div>
+  </section>
+
+  <!-- CANDY CALCULATOR -->
+  <section class="card candy-card">
+    <h2>🍬 Candy calculator</h2>
+    <p class="desc">Estimate how much candy to stock up on based on real trick-or-treater history.</p>
+    <div class="candy-grid">
+      <div class="candy-inputs">
+        <div class="field">
+          <label for="scenarioSelect">Plan for</label>
+          <select id="scenarioSelect">
+            <option value="latest">2025 turnout (last Halloween)</option>
+            <option value="avg">18-year average turnout</option>
+            <option value="busiest">Busiest year on record (2011)</option>
+            <option value="projected" selected>Projected 2026 turnout</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="piecesPerKid">Candy pieces per trick-or-treater</label>
+          <input class="num-input" type="number" id="piecesPerKid" value="2" min="1" max="10" step="1">
+        </div>
+        <div class="field">
+          <label for="piecesPerBag">Pieces per bag (as bought)</label>
+          <input class="num-input" type="number" id="piecesPerBag" value="105" min="1" step="1">
+        </div>
+        <div class="field">
+          <label for="costPerBag">Cost per bag ($)</label>
+          <input class="num-input" type="number" id="costPerBag" value="6.99" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="candy-outputs">
+        <div class="candy-out">
+          <div class="label">Expected trick-or-treaters</div>
+          <div class="value" id="outKids">–</div>
+        </div>
+        <div class="candy-out">
+          <div class="label">Candy pieces needed</div>
+          <div class="value" id="outPieces">–</div>
+        </div>
+        <div class="candy-out">
+          <div class="label">Bags to buy</div>
+          <div class="value" id="outBags">–</div>
+        </div>
+        <div class="candy-out">
+          <div class="label">Estimated cost</div>
+          <div class="value" id="outCost">–</div>
+        </div>
+        <div class="candy-note" id="scenarioNote"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="pun">🍂 Have a spook-tacular Halloween — may your candy bowl never run dry. 🍬</div>
+    Built from 18 years of front-door data, 2008–2025.
+  </footer>
+</div>
+
+<div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= DATA ================= */
+  // Year, 6pm, 6:30pm, 7pm, 7:30pm, 8pm, Total (8:15pm) — cumulative counts
+  const RAW = [
+    [2025, 14, 134, 394, 573, 710, 738],
+    [2024, 34, 143, 346, 487, 598, 631],
+    [2023, 48, 164, 342, 462, 546, 570],
+    [2022,  0, 130, 277, 387, 483, 512],
+    [2021,  8, 109, 259, 357, 449, 487],
+    [2020, 11,  55, 107, 155, 211, 219],
+    [2019,  0, 117, 262, 406, 483, 523],
+    [2018, 18, 191, 342, 497, 589, 600],
+    [2017, 41, 190, 357, 549, 710, 776],
+    [2016, 22, 160, 386, 612, 759, 822],
+    [2015, 13, 148, 336, 523, 667, 747],
+    [2014,  0, 106, 197, 321, 436, 454],
+    [2013, 33, 152, 233, 303, 371, 391],
+    [2012,  0, 147, 310, 542, 653, 673],
+    [2011,  0, 172, 367, 619, 816, 869],
+    [2010,  0, 172, 351, 538, 723, 726],
+    [2009,  0,  52, 229, 379, 522, 542],
+    [2008,  0,  75, 192, 339, 483, 492],
+  ].sort((a,b)=>a[0]-b[0]); // ascending by year
+
+  const TIME_LABELS = ["6:00pm","6:30pm","7:00pm","7:30pm","8:00pm","8:15pm"];
+  const years = RAW.map(r=>r[0]);
+  const totals = RAW.map(r=>r[6]);
+  const byYear = Object.fromEntries(RAW.map(r=>[r[0], r]));
+
+  const fmt = n => Math.round(n).toLocaleString("en-US");
+  const fmtMoney = n => "$" + n.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  /* ================= DERIVED STATS ================= */
+  let busiestIdx = 0, quietestIdx = 0;
+  totals.forEach((t,i)=>{ if(t>totals[busiestIdx]) busiestIdx=i; if(t<totals[quietestIdx]) quietestIdx=i; });
+  const busiestYear = years[busiestIdx], busiestTotal = totals[busiestIdx];
+  const quietestYear = years[quietestIdx], quietestTotal = totals[quietestIdx];
+  const avgTotal = totals.reduce((a,b)=>a+b,0)/totals.length;
+
+  const deltas = [];
+  for(let i=1;i<totals.length;i++) deltas.push({year: years[i], delta: totals[i]-totals[i-1]});
+  let biggestJump = deltas[0];
+  deltas.forEach(d=>{ if(d.delta > biggestJump.delta) biggestJump = d; });
+
+  const latestYear = years[years.length-1];
+  const latestTotal = totals[totals.length-1];
+  const prevTotal = totals[totals.length-2];
+  const latestDelta = latestTotal - prevTotal;
+  const latestPct = (latestDelta/prevTotal*100);
+
+  // simple 2026 projection: latest total + average YoY delta of the last 5 years
+  const last5 = deltas.slice(-5).map(d=>d.delta);
+  const avgRecentDelta = last5.reduce((a,b)=>a+b,0)/last5.length;
+  const projected2026 = Math.max(0, Math.round(latestTotal + avgRecentDelta));
+
+  /* ================= STAT TILES ================= */
+  const statsHost = document.getElementById("stats");
+  const statDefs = [
+    { icon:"🎃", label:"Busiest Halloween", value: fmt(busiestTotal), small: busiestYear, cls:"orange" },
+    { icon:"👻", label:"Quietest Halloween", value: fmt(quietestTotal), small: quietestYear + " · pandemic year", cls:"" },
+    { icon:"🕯️", label:"18-year average", value: fmt(Math.round(avgTotal)), small: "trick-or-treaters/yr", cls:"" },
+    { icon:"✨", label: latestYear + " turnout", value: fmt(latestTotal),
+      delta: (latestDelta>=0?"▲ +":"▼ ")+fmt(Math.abs(latestDelta))+" ("+(latestPct>=0?"+":"")+latestPct.toFixed(0)+"%) vs "+(latestYear-1),
+      deltaCls: latestDelta>=0?"up":"down", cls:"purple" },
+    { icon:"📈", label:"Biggest single-year jump", value: "+"+fmt(biggestJump.delta), small: biggestJump.year+" vs "+(biggestJump.year-1), cls:"" },
+  ];
+  statsHost.innerHTML = statDefs.map(s=>`
+    <div class="stat ${s.cls}">
+      <span class="icon">${s.icon}</span>
+      <div class="label"></div>
+      <div class="value">${s.value}${s.small? ` <small>· ${s.small}</small>`:""}</div>
+      ${s.delta? `<div class="delta ${s.deltaCls}">${s.delta}</div>`:""}
+    </div>`).join("");
+  // set labels via textContent (untrusted-data hygiene habit, even though these are static)
+  [...statsHost.querySelectorAll(".stat")].forEach((el,i)=>{ el.querySelector(".label").textContent = statDefs[i].label; });
+
+  /* ================= SHARED TOOLTIP ================= */
+  const tooltip = document.getElementById("tooltip");
+  function showTooltip(x, y, html){
+    tooltip.innerHTML = html;
+    tooltip.classList.add("show");
+    // sit just above the pointer; flip below near the top edge; stay inside the window sideways
+    var w = tooltip.offsetWidth, h = tooltip.offsetHeight, pad = 10, gap = 14;
+    var left = Math.min(Math.max(x, w/2 + pad), window.innerWidth - w/2 - pad);
+    var above = y - gap - h >= pad;
+    tooltip.style.left = left + "px";
+    tooltip.style.top = (above ? y - gap - h : y + gap) + "px";
+  }
+  function hideTooltip(){ tooltip.classList.remove("show"); }
+
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs){
+    const n = document.createElementNS(SVGNS, tag);
+    for(const k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  function roundedTopPath(x,y,w,h,r){
+    r = Math.min(r, w/2, h);
+    if(h<=0) return `M${x},${y+h} L${x},${y+h} Z`;
+    return `M${x},${y+h}
+            L${x},${y+r}
+            Q${x},${y} ${x+r},${y}
+            L${x+w-r},${y}
+            Q${x+w},${y} ${x+w},${y+r}
+            L${x+w},${y+h}
+            Z`;
+  }
+
+  /* ================= BAR CHART: year-over-year totals ================= */
+  const barHost = document.getElementById("barChartHost");
+  function renderBarChart(){
+    const W = 1000, H = 340;
+    const marginL = 44, marginR = 12, marginT = 26, marginB = 42;
+    const plotW = W - marginL - marginR, plotH = H - marginT - marginB;
+
+    const maxVal = Math.ceil(Math.max(...totals)*1.12/200)*200;
+    const yTicks = [];
+    for(let v=0; v<=maxVal; v+=200) yTicks.push(v);
+
+    const svg = el("svg", {class:"chart", viewBox:`0 0 ${W} ${H}`, role:"img",
+      "aria-label":"Bar chart of total trick-or-treaters by year, 2008 to 2025"});
+
+    // gridlines + y ticks
+    yTicks.forEach(v=>{
+      const y = marginT + plotH - (v/maxVal)*plotH;
+      svg.appendChild(el("line", {class:"grid-line", x1:marginL, x2:W-marginR, y1:y, y2:y}));
+      const t = el("text", {class:"axis-label", x: marginL-8, y: y+3, "text-anchor":"end"});
+      t.textContent = v.toLocaleString("en-US");
+      svg.appendChild(t);
+    });
+    svg.appendChild(el("line", {class:"baseline", x1:marginL, x2:W-marginR, y1:marginT+plotH, y2:marginT+plotH}));
+
+    const n = years.length;
+    const slot = plotW/n;
+    const barW = Math.min(24, slot*0.62);
+
+    years.forEach((yr,i)=>{
+      const val = totals[i];
+      const barH = (val/maxVal)*plotH;
+      const cx = marginL + slot*i + slot/2;
+      const x = cx - barW/2;
+      const y = marginT + plotH - barH;
+      const isCurrent = (yr === latestYear);
+
+      const path = el("path", {
+        class: "bar-rect" + (isCurrent? " current":""),
+        d: roundedTopPath(x,y,barW,barH,4),
+        "data-idx": i
+      });
+      svg.appendChild(path);
+
+      // hit area (bigger than the bar for easy hover)
+      const hit = el("rect", {x: cx-slot/2, y: marginT, width: slot, height: plotH, fill:"transparent",
+        style:"cursor:pointer", "data-idx": i});
+      hit.addEventListener("pointerenter", ()=> path.classList.add("hover"));
+      hit.addEventListener("pointerleave", ()=>{ path.classList.remove("hover"); hideTooltip(); });
+      hit.addEventListener("pointermove", (ev)=>{
+        const r = barHost.getBoundingClientRect();
+        showTooltip(ev.clientX, ev.clientY,
+          `<div class="t-title">${yr}</div>
+           <div class="t-row"><span class="t-val">${fmt(val)}</span> <span class="t-name">trick-or-treaters</span></div>`);
+      });
+      svg.appendChild(hit);
+
+      // x labels — every year, small font, rotated for room
+      const lbl = el("text", {class:"axis-label", x:cx, y:marginT+plotH+16, "text-anchor":"middle",
+        transform:`rotate(-55 ${cx} ${marginT+plotH+16})`});
+      lbl.textContent = String(yr).slice(2);
+      svg.appendChild(lbl);
+    });
+
+    // callouts: busiest / quietest / current
+    function callout(idx, text, cls){
+      const val = totals[idx];
+      const barH = (val/maxVal)*plotH;
+      const cx = marginL + slot*idx + slot/2;
+      const y = marginT + plotH - barH - 8;
+      const t = el("text", {class:"direct-label "+(cls||""), x:cx, y: y});
+      t.textContent = text;
+      svg.appendChild(t);
+    }
+    callout(busiestIdx, "🎃 "+fmt(busiestTotal));
+    callout(quietestIdx, "👻 "+fmt(quietestTotal), "muted");
+    if(busiestIdx !== years.length-1 && quietestIdx !== years.length-1){
+      callout(years.length-1, "✨ "+fmt(latestTotal));
+    }
+
+    barHost.innerHTML = "";
+    barHost.appendChild(svg);
+  }
+  renderBarChart();
+
+  /* ================= DATA TABLE ================= */
+  const tableEl = document.getElementById("dataTable");
+  (function renderTable(){
+    const head = document.createElement("thead");
+    head.innerHTML = "<tr><th>Year</th><th>6:00pm</th><th>6:30pm</th><th>7:00pm</th><th>7:30pm</th><th>8:00pm</th><th>Total (8:15pm)</th></tr>";
+    const body = document.createElement("tbody");
+    [...RAW].sort((a,b)=>b[0]-a[0]).forEach(row=>{
+      const tr = document.createElement("tr");
+      row.forEach((v,ci)=>{
+        const td = document.createElement("td");
+        td.textContent = ci===0 ? String(v) : fmt(v);
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    tableEl.appendChild(head);
+    tableEl.appendChild(body);
+  })();
+
+  /* ================= LINE CHART: pace of the night ================= */
+  const lineHost = document.getElementById("lineChartHost");
+  const yearSelect = document.getElementById("yearSelect");
+  const avgToggle = document.getElementById("avgToggle");
+  const lineLegend = document.getElementById("lineLegend");
+
+  [...years].sort((a,b)=>b-a).forEach(y=>{
+    const opt = document.createElement("option");
+    opt.value = y; opt.textContent = y;
+    if(y===latestYear) opt.selected = true;
+    yearSelect.appendChild(opt);
+  });
+
+  // average pace across all 18 years, per time slot
+  const avgSeries = TIME_LABELS.map((_,ti)=>{
+    const vals = RAW.map(r=>r[ti+1]);
+    return vals.reduce((a,b)=>a+b,0)/vals.length;
+  });
+
+  function renderLineChart(){
+    const selYear = Number(yearSelect.value);
+    const showAvg = avgToggle.checked;
+    const selRow = byYear[selYear];
+    const selSeries = selRow.slice(1,7);
+
+    const W = 1000, H = 340;
+    const marginL = 48, marginR = 20, marginT = 26, marginB = 34;
+    const plotW = W - marginL - marginR, plotH = H - marginT - marginB;
+
+    const allMax = Math.max(...RAW.map(r=>r[6]));
+    const maxVal = Math.ceil(allMax*1.08/200)*200;
+    const yTicks = [];
+    for(let v=0; v<=maxVal; v+=200) yTicks.push(v);
+
+    const xAt = i => marginL + (plotW/(TIME_LABELS.length-1))*i;
+    const yAt = v => marginT + plotH - (v/maxVal)*plotH;
+
+    const svg = el("svg", {class:"chart", viewBox:`0 0 ${W} ${H}`, role:"img",
+      "aria-label":`Line chart of cumulative trick-or-treaters from 6pm to 8:15pm, highlighting ${selYear}`});
+
+    yTicks.forEach(v=>{
+      const y = yAt(v);
+      svg.appendChild(el("line", {class:"grid-line", x1:marginL, x2:W-marginR, y1:y, y2:y}));
+      const t = el("text", {class:"axis-label", x:marginL-8, y:y+3, "text-anchor":"end"});
+      t.textContent = v.toLocaleString("en-US");
+      svg.appendChild(t);
+    });
+    svg.appendChild(el("line", {class:"baseline", x1:marginL, x2:W-marginR, y1:marginT+plotH, y2:marginT+plotH}));
+
+    TIME_LABELS.forEach((lbl,i)=>{
+      const t = el("text", {class:"axis-label", x:xAt(i), y:marginT+plotH+20, "text-anchor":"middle"});
+      t.textContent = lbl;
+      svg.appendChild(t);
+    });
+
+    function pathFor(series){
+      return series.map((v,i)=> (i===0?"M":"L") + xAt(i) + "," + yAt(v)).join(" ");
+    }
+
+    // context: every year, muted
+    RAW.forEach(r=>{
+      if(r[0]===selYear) return;
+      const series = r.slice(1,7);
+      svg.appendChild(el("path", {class:"context-line", d: pathFor(series)}));
+    });
+
+    // average line
+    if(showAvg){
+      svg.appendChild(el("path", {class:"series-line", d: pathFor(avgSeries),
+        style:"stroke:var(--accent-purple)"}));
+      const lastV = avgSeries[avgSeries.length-1];
+      svg.appendChild(el("circle", {class:"series-dot", cx:xAt(5), cy:yAt(lastV), r:4,
+        style:"fill:var(--accent-purple)"}));
+    }
+
+    // highlighted year
+    svg.appendChild(el("path", {class:"series-line", d: pathFor(selSeries),
+      style:"stroke:var(--accent-orange)"}));
+    const lastSel = selSeries[selSeries.length-1];
+    svg.appendChild(el("circle", {class:"series-dot", cx:xAt(5), cy:yAt(lastSel), r:4.5,
+      style:"fill:var(--accent-orange)"}));
+    const endLbl = el("text", {class:"direct-label", x:xAt(5)-4, y:yAt(lastSel)-10, "text-anchor":"end"});
+    endLbl.textContent = selYear + ": " + fmt(lastSel);
+    svg.appendChild(endLbl);
+
+    // crosshair + hover layer
+    const crosshair = el("line", {class:"crosshair", x1:0,x2:0,y1:marginT,y2:marginT+plotH});
+    svg.appendChild(crosshair);
+    const hitOverlay = el("rect", {x:marginL, y:marginT, width:plotW, height:plotH, fill:"transparent", style:"cursor:crosshair"});
+    hitOverlay.addEventListener("pointermove", (ev)=>{
+      const rect = lineHost.querySelector("svg").getBoundingClientRect();
+      const scaleX = W/rect.width;
+      const localX = (ev.clientX-rect.left)*scaleX;
+      const step = plotW/(TIME_LABELS.length-1);
+      let i = Math.round((localX-marginL)/step);
+      i = Math.max(0, Math.min(TIME_LABELS.length-1, i));
+      crosshair.setAttribute("x1", xAt(i)); crosshair.setAttribute("x2", xAt(i));
+      crosshair.style.opacity = 1;
+      const hostRect = lineHost.getBoundingClientRect();
+      let html = `<div class="t-title">${TIME_LABELS[i]}</div>
+        <div class="t-row"><span class="t-key" style="background:var(--accent-orange)"></span>
+          <span class="t-val">${fmt(selSeries[i])}</span> <span class="t-name">${selYear}</span></div>`;
+      if(showAvg){
+        html += `<div class="t-row"><span class="t-key" style="background:var(--accent-purple)"></span>
+          <span class="t-val">${fmt(Math.round(avgSeries[i]))}</span> <span class="t-name">18-yr avg</span></div>`;
+      }
+      showTooltip(ev.clientX, ev.clientY, html);
+    });
+    hitOverlay.addEventListener("pointerleave", ()=>{ crosshair.style.opacity = 0; hideTooltip(); });
+    svg.appendChild(hitOverlay);
+
+    lineHost.innerHTML = "";
+    lineHost.appendChild(svg);
+
+    // legend
+    lineLegend.innerHTML = "";
+    const items = [{label: selYear + " (highlighted)", color:"var(--accent-orange)"}];
+    if(showAvg) items.push({label:"18-year average", color:"var(--accent-purple)"});
+    items.forEach(it=>{
+      const div = document.createElement("div");
+      div.className = "item";
+      const sw = document.createElement("span");
+      sw.className = "swatch";
+      sw.style.background = it.color;
+      div.appendChild(sw);
+      const txt = document.createElement("span");
+      txt.textContent = it.label;
+      div.appendChild(txt);
+      lineLegend.appendChild(div);
+    });
+  }
+  renderLineChart();
+  yearSelect.addEventListener("change", renderLineChart);
+  avgToggle.addEventListener("change", renderLineChart);
+  window.addEventListener("resize", ()=>{ renderBarChart(); renderLineChart(); });
+
+  /* ================= CANDY CALCULATOR ================= */
+  const scenarioSelect = document.getElementById("scenarioSelect");
+  const piecesPerKidEl = document.getElementById("piecesPerKid");
+  const piecesPerBagEl = document.getElementById("piecesPerBag");
+  const costPerBagEl = document.getElementById("costPerBag");
+  const outKids = document.getElementById("outKids");
+  const outPieces = document.getElementById("outPieces");
+  const outBags = document.getElementById("outBags");
+  const outCost = document.getElementById("outCost");
+  const scenarioNote = document.getElementById("scenarioNote");
+
+  const scenarios = {
+    latest:   { kids: latestTotal, note: `Based on your actual ${latestYear} count of ${fmt(latestTotal)}.` },
+    avg:      { kids: Math.round(avgTotal), note: `Average turnout across all 18 tracked years (2008–2025).` },
+    busiest:  { kids: busiestTotal, note: `Your busiest Halloween on record — ${busiestYear}, in case this year rivals it.` },
+    projected:{ kids: projected2026, note: `${fmt(latestTotal)} (${latestYear}) + average yearly change over the last 5 years (${(avgRecentDelta>=0?"+":"")+fmt(avgRecentDelta)}) ≈ ${fmt(projected2026)}.` },
+  };
+
+  function animateNumber(elNode, from, to, fmtFn, duration=450){
+    const start = performance.now();
+    from = isFinite(from) ? from : to;
+    function tick(now){
+      const p = Math.min(1, (now-start)/duration);
+      const eased = 1 - Math.pow(1-p, 3);
+      const val = from + (to-from)*eased;
+      elNode.textContent = fmtFn(val);
+      if(p<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  let prevOut = { kids:0, pieces:0, bags:0, cost:0 };
+  function renderCandy(){
+    const scen = scenarios[scenarioSelect.value];
+    const kids = scen.kids;
+    const perKid = Math.max(1, Number(piecesPerKidEl.value) || 1);
+    const perBag = Math.max(1, Number(piecesPerBagEl.value) || 1);
+    const costBag = Math.max(0, Number(costPerBagEl.value) || 0);
+
+    const pieces = kids * perKid;
+    const bags = Math.ceil(pieces / perBag);
+    const cost = bags * costBag;
+
+    animateNumber(outKids, prevOut.kids, kids, fmt);
+    animateNumber(outPieces, prevOut.pieces, pieces, fmt);
+    animateNumber(outBags, prevOut.bags, bags, fmt);
+    animateNumber(outCost, prevOut.cost, cost, fmtMoney);
+    prevOut = { kids, pieces, bags, cost };
+
+    scenarioNote.textContent = scen.note;
+  }
+  renderCandy();
+  [scenarioSelect, piecesPerKidEl, piecesPerBagEl, costPerBagEl].forEach(elm=>{
+    elm.addEventListener("input", renderCandy);
+    elm.addEventListener("change", renderCandy);
+  });
+
+  /* ================= DECORATIVE SKY ================= */
+  (function decorate(){
+    const sky = document.getElementById("sky");
+    let html = "";
+    for(let i=0;i<28;i++){
+      const top = Math.random()*70;
+      const left = Math.random()*100;
+      const delay = (Math.random()*4).toFixed(2);
+      html += `<span class="star" style="top:${top}%; left:${left}%; animation-delay:${delay}s;"></span>`;
+    }
+    const bats = ["🦇","🦇","🦇"];
+    bats.forEach((b,i)=>{
+      const top = 5 + i*14 + Math.random()*8;
+      const delay = i*7 + Math.random()*3;
+      html += `<span class="bat" style="top:${top}%; left:0; animation-delay:${delay*-1}s;">${b}</span>`;
+    });
+    sky.innerHTML = html;
+  })();
+
+})();
+</script>
+</body>
+</html>
