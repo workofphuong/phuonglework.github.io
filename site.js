@@ -11,7 +11,7 @@
         var f = chip.dataset.filter, exp = 0, proj = 0;
         chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c === chip)); });
         cards.forEach(function (card) {
-          var ok = f === 'all' || card.dataset.stages.split(' ').indexOf(f) > -1;
+          var ok = f === 'all' || (f === 'work' && card.dataset.kind === 'experience') || card.dataset.stages.split(' ').indexOf(f) > -1;
           card.hidden = !ok;
           if (ok) { if (card.dataset.kind === 'project') proj++; else exp++; }
         });
