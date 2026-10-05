@@ -4,37 +4,144 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#14172B">
-  <title>Vibe Code Library</title>
-  <meta name="description" content="A library of small apps built by describing them to Claude.">
+  <title>Work of Phuong Le</title>
+  <meta name="description" content="Marketing work across biotech, education, financial services and industrial products, plus a resume and the small apps Phuong Le built with Claude.">
+  <meta property="og:title" content="Work of Phuong Le">
+  <meta property="og:description" content="Early-stage marketing across biotech, education, financial services and industrial products.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314172B'/%3E%3Ctext x='32' y='47' font-family='Impact,Arial Narrow,sans-serif' font-size='46' text-anchor='middle' fill='%23F4B6C9'%3EP%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="/nav.css">
+  <script>
+    // Old gallery links (workofphuong.github.io/#halloween) now go straight to the project
+    (function () {
+      var map = {
+        'fun-fact-roster': 'https://workofphuong.github.io/fun-fact-roster/',
+        'halloween': '/projects/halloween/',
+        'scooby-doo': '/projects/scooby-doo/'
+      };
+      var h = location.hash.slice(1);
+      if (Object.prototype.hasOwnProperty.call(map, h)) location.replace(map[h]);
+    })();
+  </script>
 </head>
 <body>
   <div class="wrap">
-    <header class="top">
-      <div class="bar">
-        <span class="pill" id="eyebrow">Vibe code library</span>
-        <span class="owner" id="owner"></span>
+    <header class="hero">
+      <figure class="portrait">
+        <img src="/assets/phuong.webp" width="640" height="800" alt="Portrait of Phuong Le, smiling, in a light blue striped shirt">
+      </figure>
+      <h1>Work of Phuong Le</h1>
+      <div class="hero-text">
+        <p class="headline">I'm doing, learning and growing in early-stage marketing across industrial products, education, financial services and now biotech.</p>
+        <p class="sub">I'm passionate about helping startups achieve their goals. Wearing different hats has grounded my skills across the whole spectrum, from customer discovery and account management to strategic planning, campaign execution and data monitoring.</p>
+        <p class="status">Graduating December 2026 from the University of Cincinnati. Looking for a full-time marketing role at startups.</p>
+        <div class="contact">
+          <a class="pill-link primary" href="/resume/">Resume</a>
+          <a class="pill-link" href="https://www.linkedin.com/in/phuongle22" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="pill-link" href="https://public.tableau.com/app/profile/phuong.le4769/vizzes" target="_blank" rel="noopener">Tableau <span aria-hidden="true">&#8599;</span><span class="sr">(opens in a new tab)</span></a>
+        </div>
       </div>
-      <h1 id="title">Vibe code library</h1>
-      <p class="script" id="script"></p>
-      <p class="intro" id="intro"></p>
     </header>
 
-    <nav class="filters" id="filters" aria-label="Filter projects"></nav>
-    <p class="count" id="count" aria-live="polite"></p>
-    <main class="cards" id="cards"></main>
-    <footer class="foot" id="footer"></footer>
+    <nav class="filters" aria-label="Filter experiences and projects">
+      <button class="chip" type="button" aria-pressed="true" data-filter="all">All</button>
+      <button class="chip" type="button" aria-pressed="false" data-filter="vibe">Vibe code</button>
+      <button class="chip" type="button" aria-pressed="false" data-filter="social">Social marketing</button>
+      <button class="chip" type="button" aria-pressed="false" data-filter="research">Market research</button>
+      <button class="chip" type="button" aria-pressed="false" data-filter="data">Data monitoring &amp; visualization</button>
+    </nav>
+    <p class="count" id="count" aria-live="polite">5 experiences · 3 projects</p>
+
+    <main class="cards">
+      <a class="card" href="/work/picture-health/" data-kind="experience" data-stages="social data">
+        <span class="thumb"><img src="/assets/work/picture-health/summary-poster.webp" width="2000" height="1500" alt="" loading="lazy" style="--pos: 50% 45%"></span>
+        <span class="meta">
+          <span class="tag">Marketing &amp; Growth Co-op · 2026</span>
+          <span class="name">Picture Health</span>
+          <span class="hook">Doubled the page's LinkedIn engagement rate and built five AI workflows that run the routine work.</span>
+          <span class="stages"><span>Social marketing</span><span>Data monitoring</span></span>
+        </span>
+      </a>
+
+      <a class="card" href="/work/unitutor/" data-kind="experience" data-stages="social research">
+        <span class="thumb"><img src="/assets/work/unitutor/fintalk-poster.webp" width="692" height="864" alt="" loading="lazy"></span>
+        <span class="meta">
+          <span class="tag">Marketing Lead · 2022–23</span>
+          <span class="name">UniTutor</span>
+          <span class="hook">Free events made a new tutoring service a name students knew: 10K+ reach per campaign, 150+ enrollments per course.</span>
+          <span class="stages"><span>Social marketing</span><span>Market research</span></span>
+        </span>
+      </a>
+
+      <a class="card" href="/work/yogi-cpa/" data-kind="experience" data-stages="social research">
+        <span class="thumb"><img src="/assets/work/yogi-cpa/website-hero.webp" width="1059" height="864" alt="" loading="lazy"></span>
+        <span class="meta">
+          <span class="tag">Marketing Executive · 2022–23</span>
+          <span class="name">Yogi CPA</span>
+          <span class="hook">A slogan, a visual identity and a weekly content system; new audience reach grew 30% a month.</span>
+          <span class="stages"><span>Social marketing</span><span>Market research</span></span>
+        </span>
+      </a>
+
+      <a class="card project" href="https://workofphuong.github.io/fun-fact-roster/" target="_blank" rel="noopener" data-kind="project" data-stages="vibe">
+        <span class="thumb"><img src="/assets/roster.png" width="397" height="392" alt="" loading="lazy" style="--pos: 50% 0%"></span>
+        <span class="meta">
+          <span class="tag">Web app</span>
+          <span class="name">Fun Fact Roster <span class="ext" aria-hidden="true">&#8599;</span></span>
+          <span class="hook">Turns something small about you into a short story you'll want to tell. <span class="sr">(opens in a new tab)</span></span>
+          <span class="stages"><span>Vibe code</span></span>
+        </span>
+      </a>
+
+      <a class="card project" href="/projects/halloween/" target="_blank" rel="noopener" data-kind="project" data-stages="vibe data">
+        <span class="thumb"><img src="/assets/halloween.jpg" width="533" height="406" alt="" loading="lazy" style="--pos: 50% 0%"></span>
+        <span class="meta">
+          <span class="tag">Data visualization</span>
+          <span class="name">Halloween Trick-or-Treat Tracker <span class="ext" aria-hidden="true">&#8599;</span></span>
+          <span class="hook">18 years of front-door visitor counts, with a candy calculator for next year. <span class="sr">(opens in a new tab)</span></span>
+          <span class="stages"><span>Vibe code</span><span>Data visualization</span></span>
+        </span>
+      </a>
+
+      <a class="card project" href="/projects/scooby-doo/" target="_blank" rel="noopener" data-kind="project" data-stages="vibe data">
+        <span class="thumb"><img src="/assets/scooby-doo.jpg" width="800" height="609" alt="" loading="lazy" style="--pos: 50% 0%"></span>
+        <span class="meta">
+          <span class="tag">Data visualization</span>
+          <span class="name">Scooby-Doo Case Files <span class="ext" aria-hidden="true">&#8599;</span></span>
+          <span class="hook">603 episodes and movies, 1969–2021: who catches the monster, and how the formula changed. <span class="sr">(opens in a new tab)</span></span>
+          <span class="stages"><span>Vibe code</span><span>Data visualization</span></span>
+        </span>
+      </a>
+
+      <a class="card" href="/work/bearcat/" data-kind="experience" data-stages="research">
+        <span class="thumb"><img src="/assets/work/bearcat/team-photo.webp" width="1400" height="1050" alt="" loading="lazy" style="--pos: 50% 40%"></span>
+        <span class="meta">
+          <span class="tag">Analyst · 2024–25</span>
+          <span class="name">Bearcat Venture</span>
+          <span class="hook">Market research that informed funding decisions for 4 early-stage startups.</span>
+          <span class="stages"><span>Market research</span></span>
+        </span>
+      </a>
+
+      <a class="card" href="/work/yagikuma/" data-kind="experience" data-stages="research">
+        <span class="thumb"><img src="/assets/work/yagikuma/ky-block-brochure.webp" width="610" height="864" alt="" loading="lazy"></span>
+        <span class="meta">
+          <span class="tag">Market Entry &amp; Sales · 2021–22</span>
+          <span class="name">Yagikuma</span>
+          <span class="hook">Mapped 50+ companies and secured 2+ strategic partnerships in six months.</span>
+          <span class="stages"><span>Market research</span></span>
+        </span>
+      </a>
+    </main>
+
+    <footer class="foot">
+      <span>© 2026 Phuong Le</span>
+      <span><a href="mailto:lengminhphuong12@gmail.com">lengminhphuong12@gmail.com</a> · <a href="https://www.linkedin.com/in/phuongle22" target="_blank" rel="noopener">LinkedIn</a></span>
+    </footer>
   </div>
-
-  <dialog id="detail" aria-labelledby="detail-title">
-    <div class="sheet" id="sheet"></div>
-  </dialog>
-
-  <noscript><p class="intro">This library needs JavaScript to show the projects.</p></noscript>
-  <script src="projects.js"></script>
-  <script src="gallery.js"></script>
+  <script src="/site.js"></script>
 </body>
 </html>
